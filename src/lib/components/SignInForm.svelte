@@ -1,5 +1,5 @@
 <script>
-	import { Button, Col, Container, Row } from 'sveltestrap';
+	import { Button, Col, Container, Row, Image } from 'sveltestrap';
 	//import { defaultEvmStores } from 'svelte-ethers-store';
 	import { ethers } from 'ethers';
 	import {
@@ -74,6 +74,9 @@
 </script>
 
 <Container fluid >
+	<Row class="justify-content-center align-items-center">
+		<Image style="width:20%; margin-bottom:-20%;" src="./tarot-balancer-logo.png" />
+	</Row>
 	<Row class="min-vh-100 justify-content-center align-items-center">
 		<Col>
 			<h1>
