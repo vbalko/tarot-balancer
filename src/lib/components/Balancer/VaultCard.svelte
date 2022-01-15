@@ -1,7 +1,6 @@
 <script>
 	import { Card, CardHeader, CardTitle, CardBody, Badge, FormGroup, Input, Label, Tooltip, Popover, Spinner } from 'sveltestrap';
 	import { TarotUtils, w3utils } from '$lib/utils/tarot/tarotUtils';
-import { hexValue } from 'ethers/lib/utils';
 	export let data;
 
 	const promise = TarotUtils.cTarotInfo(data.contract_address);
