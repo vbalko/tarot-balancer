@@ -73,7 +73,7 @@
 	}
 </script>
 
-<Container fluid style="background:linear-gradient(to bottom, #0f0c29, #302b63">
+<Container fluid >
 	<Row class="min-vh-100 justify-content-center align-items-center">
 		<Col>
 			<h1>
@@ -91,22 +91,3 @@
 {:else} Please connect
 {/if}
 
-{#if $connected}
-	<p>
-		Well done, you are now connected to the blockchain (account {$signerAddress})
-
-		{#await network}
-			<span>waiting...</span>
-		{:then value}
-			<span>{JSON.stringify(value)}</span>
-		{/await}
-
-		{#await account}
-			<span>waiting...</span>
-		{:then value}
-			with {#if value}account {value}{:else}no account{/if}
-		{/await}
-	</p>
-
-	<button on:click={disconnect}> Disconnect </button>
-{/if}

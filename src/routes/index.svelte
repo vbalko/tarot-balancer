@@ -20,7 +20,7 @@
 {#if !$connected}
   <SignInForm on:connect={handleConnect}/>
 {:else}
-<p>
+<!-- <p>
   Well done, you are now connected to the blockchain (account {$signerAddress})
 
   {#await network}
@@ -33,7 +33,7 @@
     <span>waiting...</span>
   {:then value}
     with {#if value}account {value}{:else}no account{/if}
-  {/await}
+  {/await} -->
   <Balancer></Balancer>
-</p>
+<!-- </p> -->
 {/if}
