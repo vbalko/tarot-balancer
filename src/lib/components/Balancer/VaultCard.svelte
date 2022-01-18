@@ -16,7 +16,7 @@
             ret.amountUSD = ret.amountUSD * (-1);
             ret.amountToken = ret.amountUSD / token0.geckoPrice;
         }
-        return `<Badge color="primary">${ret.symbol} ${ret.amountToken.toFixed(2)}</Badge><small> ($ ${ret.amountUSD.toFixed(2)})</small>` ;
+        return `<Badge color="primary">${ret.symbol}: ${ret.amountToken.toFixed(2)}</Badge><small> ($ ${ret.amountUSD.toFixed(2)})</small>` ;
     };
 
     const getDangerClass = (ratio) => {
@@ -75,7 +75,7 @@
                 <Badge color="secondary">{value.token0rate.toFixed(4)}</Badge> / <Badge color="secondary">{value.token1rate.toFixed(4)}</Badge>
                 <Popover target={`b${value.address}-${value.token1.symbol}_rate`} top>{value.token1rate}</Popover>
             </FormGroup>    
-            Rebalance: <Badge color="info">{@html calculateRebalance(value.token0,value.token1)}</Badge> <br>     
+            Rebalance: <h4><Badge color="info">{@html calculateRebalance(value.token0,value.token1)}</Badge></h4>    
             Debt Ratio: <Badge color="{getDangerClass(getDebtRatio(value.totalBorrowed,value.totalCollateral))}">{(getDebtRatio(value.totalBorrowed,value.totalCollateral)  * 100).toFixed(2)} %</Badge>                  
 			
 		</CardBody>

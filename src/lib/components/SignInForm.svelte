@@ -2,6 +2,7 @@
 	import { Button, Col, Container, Row, Image } from 'sveltestrap';
 	//import { defaultEvmStores } from 'svelte-ethers-store';
 	import { ethers } from 'ethers';
+	import  AddressForm  from '$lib/components/AddressForm/index.svelte';
 	import {
 		connected,
 		provider,
@@ -35,8 +36,8 @@
 			await handler['Browser']();
 
 			console.log('$connected', defaultEvmStores.$connected);
-			console.log('$provider', defaultEvmStores.$provider);
-			console.log('$signer', defaultEvmStores.$signer);
+			// console.log('$provider', defaultEvmStores.$provider);
+			// console.log('$signer', defaultEvmStores.$signer);
 			pending = false;
 		} catch (e) {
 			console.log(e);
@@ -79,12 +80,13 @@
 	</Row>
 	<Row class="min-vh-100 justify-content-center align-items-center">
 		<Col>
+			<AddressForm on:inspect={connect}></AddressForm>
 			<h1>
-				<Button
+				<!-- <Button
 					color="primary"
 					class="position-absolute top-50 start-50 translate-middle"
 					on:click={connect}>Connect Wallet</Button
-				>
+				> -->
 			</h1>
 		</Col>
 	</Row>
