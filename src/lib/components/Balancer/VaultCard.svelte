@@ -1,5 +1,5 @@
 <script>
-	import { Card, CardHeader, CardTitle, CardBody, Badge, FormGroup, Input, Label, Tooltip, Popover, Spinner } from 'sveltestrap';
+	import { Card, CardHeader, CardTitle, CardBody, Badge, FormGroup, Input, Label, Tooltip, Popover, Spinner, Button } from 'sveltestrap';
 	import { TarotUtils, w3utils } from '$lib/utils/tarot/tarotUtils';
 	export let data;
 
@@ -97,13 +97,13 @@
                 <Popover target={`c${value.address}-${value.token1.symbol}`} top>({value.debankInfo.token1.ratio},{1 / value.debankInfo.token1.ratio_usd}) | {value.token1rate * value.debankInfo.token1.ratio} | {value.token1rate / value.debankInfo.token1.ratio}</Popover>
             </FormGroup>    
             <FormGroup>
-                <Label id={`b${value.address}-${value.token1.symbol}_rate`}>TWAP price:</Label>
-                <Badge color="secondary">{value.token0rate.toFixed(4)}</Badge> / <Badge color="{riskClass(value.liqPrices0.risk[0])}">{value.liqPrices0.price[0].toFixed(4)}</Badge> - <Badge color="{riskClass(value.liqPrices0.risk[1])}">{value.liqPrices0.price[1].toFixed(4)}</Badge>
+                <Label id={`b${value.address}-${value.token1.symbol}_rate`}>TWAP :</Label>
+                <Button outline color="secondary">{value.token0rate.toFixed(4)}</Button> / <Button outline color="{riskClass(value.liqPrices0.risk[0])}">{value.liqPrices0.price[0].toFixed(4)}</Button> - <Button outline color="{riskClass(value.liqPrices0.risk[1])}">{value.liqPrices0.price[1].toFixed(4)}</Button>
                 <Popover target={`b${value.address}-${value.token1.symbol}_rate`} top>{value.token1rate}</Popover>
             </FormGroup>
             <FormGroup>
-                <Label id={`b${value.address}-${value.token1.symbol}_rate`}>TWAP price:</Label>
-                <Badge color="secondary">{value.token1rate.toFixed(4)}</Badge> / <Badge color="{riskClass(value.liqPrices1.risk[0])}">{value.liqPrices1.price[0].toFixed(4)}</Badge> - <Badge color="{riskClass(value.liqPrices1.risk[1])}">{value.liqPrices1.price[1].toFixed(4)}</Badge>
+                <Label id={`b${value.address}-${value.token1.symbol}_rate`}>TWAP :</Label>
+                <Button outline  color="secondary">{value.token1rate.toFixed(4)}</Button> / <Button outline color="{riskClass(value.liqPrices1.risk[0])}">{value.liqPrices1.price[0].toFixed(4)}</Button> - <Button outline color="{riskClass(value.liqPrices1.risk[1])}">{value.liqPrices1.price[1].toFixed(4)}</Button>
                 <Popover target={`b${value.address}-${value.token1.symbol}_rate`} top>{value.token1rate}</Popover>
             </FormGroup>                 
             Rebalance: <h4><Badge color="info">{@html calculateRebalance(value.token0,value.token1)}</Badge></h4>    
