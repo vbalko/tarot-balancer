@@ -49,15 +49,18 @@
 		<CardBody>
             <FormGroup>
                 <Label>Total Coll:</Label>
-                <Badge color="primary">{(value.totalCollateralLP).toFixed(2)}</Badge> / <small>${value.totalCollateral.toFixed(3)} ({value.LPPrice.toFixed(2)})</small>
+                <!-- <Badge color="primary">{(value.totalCollateralLP).toFixed(2)}</Badge> / <small>${value.totalCollateral.toFixed(3)} ({value.LPPrice.toFixed(2)})</small> -->
+                <Badge color="primary">{(value.totalCollateralLP).toFixed(2)}</Badge> / <small>${value.debankInfo.asset_usd_value.toFixed(3)} ({value.debankInfo.LPPrice.toFixed(2)})</small>
             </FormGroup>
             <FormGroup>
                 <Label>Total Debt:</Label>
+                <!-- <Badge color="danger" >${(value.totalBorrowed).toFixed(2)}</Badge> / <small>${(value.totalEquity).toFixed(2)} ({(value.totalCollateral  / value.totalEquity).toFixed(2)}x)</small> -->
                 <Badge color="danger" >${(value.totalBorrowed).toFixed(2)}</Badge> / <small>${(value.totalEquity).toFixed(2)} ({(value.totalCollateral  / value.totalEquity).toFixed(2)}x)</small>
             </FormGroup>
             <FormGroup>
                 <Label id={`b${value.address}-${value.token0.symbol}`}>{value.token0.symbol} borr:</Label>
-                <Badge color="secondary">{value.token0._borrowed.toFixed(3)}</Badge> <small>${(value.token0.geckoPrice * value.token0._borrowed).toFixed(2)}</small>
+                <!-- <Badge color="secondary">{value.token0._borrowed.toFixed(3)}</Badge> <small>${(value.token0.geckoPrice * value.token0._borrowed).toFixed(2)}</small> -->
+                <Badge color="secondary">{value.debankInfo.token0.borrow_quantity.toFixed(3)}</Badge> <small>${value.debankInfo.token0.borrow_amount.toFixed(2)}</small>
                 <Popover target={`b${value.address}-${value.token0.symbol}`} top>{value.token0.bTarot}</Popover>
             </FormGroup>   
             <!-- <FormGroup>
@@ -67,7 +70,8 @@
             </FormGroup>                 -->
             <FormGroup>
                 <Label id={`c${value.address}-${value.token1.symbol}`}>{value.token1.symbol} borr:</Label>
-                <Badge color="secondary">{value.token1._borrowed.toFixed(3)}</Badge> <small>${(value.token1.geckoPrice * value.token1._borrowed).toFixed(2)}</small>
+                <!-- <Badge color="secondary">{value.token1._borrowed.toFixed(3)}</Badge> <small>${(value.token1.geckoPrice * value.token1._borrowed).toFixed(2)}</small> -->
+                <Badge color="secondary">{value.debankInfo.token1.borrow_quantity.toFixed(3)}</Badge> <small>${value.debankInfo.token1.borrow_amount.toFixed(2)}</small>
                 <Popover target={`c${value.address}-${value.token1.symbol}`} top>{value.token1.bTarot}</Popover>
             </FormGroup>    
             <FormGroup>
@@ -76,7 +80,7 @@
                 <Popover target={`b${value.address}-${value.token1.symbol}_rate`} top>{value.token1rate}</Popover>
             </FormGroup>    
             Rebalance: <h4><Badge color="info">{@html calculateRebalance(value.token0,value.token1)}</Badge></h4>    
-            Debt Ratio: <Badge color="{getDangerClass(getDebtRatio(value.totalBorrowed,value.totalCollateral))}">{(getDebtRatio(value.totalBorrowed,value.totalCollateral)  * 100).toFixed(2)} %</Badge>                  
+            Debt Ratio: <Badge color="{getDangerClass(value.debankInfo.debt_ratio)}">{(value.debankInfo.debt_ratio  * 100).toFixed(2)} %</Badge>                  
 			
 		</CardBody>
 	{/await}

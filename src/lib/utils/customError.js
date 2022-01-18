@@ -29,6 +29,22 @@ export class GeckoApiError extends StatusError {
 	}	
 }
 
+export class DebankApiError extends StatusError {
+	constructor(status, prev = undefined, ...params) {
+		super(...params);
+
+		// Maintains proper stack trace for where our error was thrown (only available on V8)
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, DebankApiError);
+		}
+
+		this.name = this.constructor.name;
+		this.prev = prev; //previous error
+        this.status = status;
+        this.date = new Date();
+	}	
+}
+
 export class TokenError extends StatusError {
 	constructor(status, prev = undefined, ...params) {
 		super(...params);
@@ -149,6 +165,10 @@ export const errorCodes = {
 		'PRICE_NOT_FOUND': 3	
 	},
     'tarot': {
-        'VAULT_TYPE': 0
+        'GENERAL_ERROR': 0,
+        'VAULT_TYPE': 1
+    },
+    'debank': {
+        'GENERAL_ERROR': 0
     }
 }
