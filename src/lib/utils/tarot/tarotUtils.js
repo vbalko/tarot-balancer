@@ -59,8 +59,10 @@ class TarotUtil {
 					price: vault.detail.supply_token_list[0].price,
 					supply_quantity: vault.detail.supply_token_list[0].amount,
 					borrow_quantity: vault.detail.borrow_token_list[0].amount,
+					ratio: vault.detail.borrow_token_list[0].amount / vault.detail.supply_token_list[0].amount,
 					supply_amount: vault.detail.supply_token_list[0].amount * vault.detail.supply_token_list[0].price,
 					borrow_amount: vault.detail.borrow_token_list[0].amount * vault.detail.supply_token_list[0].price,
+					ratio_usd: (vault.detail.borrow_token_list[0].amount * vault.detail.supply_token_list[0].price) / (vault.detail.supply_token_list[0].amount * vault.detail.supply_token_list[0].price),
 					daily_cost_rate: vault.detail.borrow_token_list[0].daily_cost_rate
 				},
 				token1: {
@@ -70,8 +72,10 @@ class TarotUtil {
 					price: vault.detail.supply_token_list[1].price,
 					supply_quantity: vault.detail.supply_token_list[1].amount,
 					borrow_quantity: vault.detail.borrow_token_list[1].amount,
+					ratio: vault.detail.borrow_token_list[0].amount / vault.detail.supply_token_list[0].amount,
 					supply_amount: vault.detail.supply_token_list[1].amount * vault.detail.supply_token_list[1].price,
-					borrow_amount: vault.detail.borrow_token_list[1].amount * vault.detail.supply_token_list[1].price,					
+					borrow_amount: vault.detail.borrow_token_list[1].amount * vault.detail.supply_token_list[1].price,	
+					ratio_usd: (vault.detail.borrow_token_list[0].amount * vault.detail.supply_token_list[0].price) / (vault.detail.supply_token_list[0].amount * vault.detail.supply_token_list[0].price),				
 					daily_cost_rate: vault.detail.borrow_token_list[1].daily_cost_rate
 				}				
 			});
@@ -146,7 +150,10 @@ class TarotUtil {
 		token0.reserves = LPreserveRate.reserves[0];
 		token1.reserves = LPreserveRate.reserves[1];
 
+		
+
 		const m0 = this.calculateM0(token0, token1, LPrice0, LPrice1, safeMarginSqrt, liqIncentive);
+		console.log(`${routerRecord.vault.dex.name} ${LPName} m0: ${m0}`);
 
 		const totalBorrowed = token0.borrowedUSD + token1.borrowedUSD;
 		const totalCollateral = totalCollateralLP * LPPrice;
@@ -155,6 +162,11 @@ class TarotUtil {
 		const debankInfoAll = await this.tarotVaultsDebank(signerAddress);
 		const debankInfo = debankInfoAll.filter(item => item.token0.borrow_quantity == token0._borrowed)[0];
 		debankInfo.LPPrice = debankInfo.asset_usd_value / totalCollateralLP;
+
+		const swings = this.calcSwings(totalCollateralLP,liqIncentive,LPrice0,LPrice1,token0, token1,safeMarginSqrt);
+		const liqp = this.calcLiqPrices(LPreserveRate.inverseRate, LPreserveRate.rate, swings.swingA, swings.swingB,safeMarginSqrt);
+
+		console.log('swings: ',liqp[0], liqp[1]);
 
 		const ret = {
 			address,
@@ -166,14 +178,17 @@ class TarotUtil {
 			dex: routerRecord.vault.dex.name,
 			token0,
 			token0rate: LPreserveRate.inverseRate,
+			liqPrices0: liqp[0],
 			token0off: token0.borrowed * LPreserveRate.inverseRate,
 			token1,
 			token1rate: LPreserveRate.rate,
+			liqPrices1: liqp[1],
 			token1off: token1.borrowed * LPreserveRate.rate,
 			LPName,
 			totalCollateralLP,
 			totalCollateral,
 			totalBorrowed,
+			LPtotalSupply: this.LPReservesRate.totalSupply,
 			totalEquity,
 			safeMarginSqrt,
 			liqIncentive,
@@ -185,9 +200,45 @@ class TarotUtil {
 
 	}
 
+	calcSwings(totalCollateralLP,liqIncentive,LPrice0, LPrice1, token0, token1, safetyMarginSqrt) {
+		const valueA = LPrice0 * token0._borrowed;
+		const valueB = LPrice1 * token1._borrowed;
+		const actualCollateral = totalCollateralLP / liqIncentive;
+		const rad = Math.sqrt(actualCollateral ** 2 - 4 * valueA * valueB );
+		const t = (actualCollateral + rad) / (2 * safetyMarginSqrt);
+		const swingA = (t / valueA ) ** 2;
+		const swingB = (t / valueB ) ** 2;
+		return {swingA, swingB};
+	}
+
+	calcLiqPrices(twap1, twap2, swingA, swingB,safetyMarginSqrt) {
+		const lp1 = { price: [twap1 / swingB, twap1 * swingA]};
+		lp1.risk = [];
+		lp1.risk.push(this.calcRiskFactor(lp1.price[0],twap1,safetyMarginSqrt));
+		lp1.risk.push(this.calcRiskFactor(lp1.price[1],twap1,safetyMarginSqrt));
+		const lp2 = { price: [twap2 / swingB, twap2 * swingA]};
+		lp2.risk = [];
+		lp2.risk.push(this.calcRiskFactor(lp2.price[0],twap2,safetyMarginSqrt));
+		lp2.risk.push(this.calcRiskFactor(lp2.price[1],twap2,safetyMarginSqrt));
+		return [lp1,lp2];
+	}
+
+	calcRiskFactor(liqPrice,twapPrice,safetyMarginSqrt) {
+		const LIQ_K = 1.7;
+		const safetyFactor = liqPrice > twapPrice ? liqPrice / twapPrice - 1 : twapPrice / liqPrice - 1;
+		const riskFactor = safetyMarginSqrt;
+		const riskClass = 
+			safetyFactor > riskFactor * LIQ_K ** 2 ? 0 :
+				safetyFactor > riskFactor * LIQ_K ** 1 ? 1 :
+					safetyFactor > riskFactor * LIQ_K ** 0 ? 2 :
+						safetyFactor > riskFactor * LIQ_K ** -1 ? 3 :
+							safetyFactor > riskFactor * LIQ_K ** -2 ? 4 : 5;
+		return riskClass;
+	}
+
 	calculateM0(token0, token1, LPrice0, LPrice1, safeMarginSqrt, liqIncentive) {
 		const bor0 = token0.borrowed / 10 ** 18;
-		const bor1 = token0.borrowed / 10 ** 18;
+		const bor1 = token1.borrowed / 10 ** 18;
 		const r0 = bor0 * LPrice0;
 		const r1 = bor1 * LPrice1;
 		let ret = 0;
