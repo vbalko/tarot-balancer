@@ -85,6 +85,7 @@ class TarotUtil {
 	}
 
 	async cTarotInfo(address) {
+		try {
 		const signer = defaultEvmStores.$signer;
 		const signerAddress = defaultEvmStores.$signerAddress;
 		const cTarot = await Web3Methods.getContractObj(address, ABI.cTarot, signer);
@@ -197,6 +198,13 @@ class TarotUtil {
 
 		console.dir(ret);
 		return ret;
+	} catch (err) {
+		const args = {
+			status: errorCodes.GENERAL_ERROR,
+			prev: err
+		};
+		this._errorLog(`Error readin cTarotInfo`, 'cTarotInfo', true, args);		
+	}
 
 	}
 
@@ -341,22 +349,31 @@ class TarotUtil {
 	}
 
 	async bTarotInfo(address) {
-		const signer = defaultEvmStores.$signer;
-		const signerAddress = defaultEvmStores.$signerAddress;
-		const contract = await Web3Methods.getContractObj(address, ABI.bTarot, signer);
-		const underlyingAddress = await contract.underlying();
-		const token = await Web3Methods.getContractObj(underlyingAddress, ABI.erc20, signer);
-		const borrowed = await contract.borrowBalance(signerAddress)
-		const ret = {
-			bTarot: address,
-			underlying: await contract.underlying(),
-			balance: await contract.balanceOf(signerAddress),
-			name: await token.name(),
-			symbol: await token.symbol(),
-			borrowed: borrowed,
-			_borrowed: borrowed / 10 ** 18
-		};
-		return ret;
+		try {
+			const signer = defaultEvmStores.$signer;
+			const signerAddress = defaultEvmStores.$signerAddress;
+			const contract = await Web3Methods.getContractObj(address, ABI.bTarot, signer);
+			const underlyingAddress = await contract.underlying();
+			const token = await Web3Methods.getContractObj(underlyingAddress, ABI.erc20, signer);
+			const borrowed = await contract.borrowBalance(signerAddress)
+			const ret = {
+				bTarot: address,
+				underlying: await contract.underlying(),
+				balance: await contract.balanceOf(signerAddress),
+				name: await token.name(),
+				symbol: await token.symbol(),
+				borrowed: borrowed,
+				_borrowed: borrowed / 10 ** 18
+			};
+			return ret;
+		} catch (err) {
+			const args = {
+				status: errorCodes.GENERAL_ERROR,
+				prev: err
+			};
+			this._errorLog(`Error reading bTarot info`, 'bTarotInfo', true, args);
+		}
+		
 	}
 
 	async cTarotGetRouter(cTarotAddress) {

@@ -3,7 +3,14 @@
 	import { TarotUtils, w3utils } from '$lib/utils/tarot/tarotUtils';
 	export let data;
 
-	const promise = TarotUtils.cTarotInfo(data.contract_address);
+    let promise;
+    try {
+        promise = TarotUtils.cTarotInfo(data.contract_address);
+    } catch (err) {
+        console.log('problem vaultcard');
+        promise = Promise.resolve();
+    }
+	
 
     const calculateRebalance = (token0,token1) => {
         const ret = {};
@@ -52,6 +59,11 @@
         } else {
             return 'danger';
         }
+    }
+
+    const rebalanceRisk = (value) => {
+        let max = Math.max(...[...value.liqPrices0.risk,...value.liqPrices1.risk]);
+        return riskClass(max);
     }
 
 
@@ -106,7 +118,7 @@
                 <Button outline  color="secondary">{value.token1rate.toFixed(4)}</Button> / <Button outline color="{riskClass(value.liqPrices1.risk[0])}">{value.liqPrices1.price[0].toFixed(4)}</Button> - <Button outline color="{riskClass(value.liqPrices1.risk[1])}">{value.liqPrices1.price[1].toFixed(4)}</Button>
                 <Popover target={`b${value.address}-${value.token1.symbol}_rate`} top>{value.token1rate}</Popover>
             </FormGroup>                 
-            Rebalance: <h4><Badge color="info">{@html calculateRebalance(value.token0,value.token1)}</Badge></h4>    
+            Rebalance: <h4><Badge color="{rebalanceRisk(value)}">{@html calculateRebalance(value.token0,value.token1)}</Badge></h4>    
             Debt Ratio: <Badge color="{getDangerClass(value.debankInfo.debt_ratio)}">{(value.debankInfo.debt_ratio  * 100).toFixed(2)} % ({(value.totalCollateral  / value.totalEquity).toFixed(2)}x)</Badge>                  
 			
 		</CardBody>
