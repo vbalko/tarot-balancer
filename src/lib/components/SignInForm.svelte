@@ -2,7 +2,7 @@
 	import { Button, Col, Container, Row, Image } from 'sveltestrap';
 	//import { defaultEvmStores } from 'svelte-ethers-store';
 	import { ethers } from 'ethers';
-	import  AddressForm  from '$lib/components/AddressForm/index.svelte';
+	import AddressForm from '$lib/components/AddressForm/index.svelte';
 	import {
 		connected,
 		provider,
@@ -45,26 +45,25 @@
 		}
 	};
 
-  const enable = async () => {
-    pending = true
-    let WalletConnectProvider = window.WalletConnectProvider.default
-    const provider = new WalletConnectProvider({
-      infuraId: import.meta.env.VITE_INFURA_API_KEY
-    })
-    //  Enable session (triggers QR Code modal)
-    await provider.enable();
-    defaultEvmStores.setProvider(provider)
-    pending = false
-  }
+	const enable = async () => {
+		pending = true;
+		let WalletConnectProvider = window.WalletConnectProvider.default;
+		const provider = new WalletConnectProvider({
+			infuraId: import.meta.env.VITE_INFURA_API_KEY
+		});
+		//  Enable session (triggers QR Code modal)
+		await provider.enable();
+		defaultEvmStores.setProvider(provider);
+		pending = false;
+	};
 
-  const disconnect = async () => {
-    await defaultEvmStores.disconnect()
-    pending = false
-  }
+	const disconnect = async () => {
+		await defaultEvmStores.disconnect();
+		pending = false;
+	};
 
-  $: network = $connected ? $provider.getNetwork() : ''
-  $: account = $connected && $signer ? $signer.getAddress() : ''
-
+	$: network = $connected ? $provider.getNetwork() : '';
+	$: account = $connected && $signer ? $signer.getAddress() : '';
 
 	function connect1() {
 		console.log('connect');
@@ -74,13 +73,14 @@
 	}
 </script>
 
-<Container fluid >
+<Container fluid>
 	<Row class="justify-content-center align-items-center">
-		<Image style="width:20%; margin-bottom:-20%;" src="./tarot-balancer-logo.png" />
+		<!-- <Image class="rotate" style="width:20%; margin-bottom:-20%;" src="./tarot-balancer-logo.png" /> -->
+		<img class="pulse " style="min-width:20%; margin-bottom:-20%;" src="./tarot-balancer-logo.png" />
 	</Row>
 	<Row class="min-vh-100 justify-content-center align-items-center">
 		<Col>
-			<AddressForm on:inspect={connect}></AddressForm>
+			<AddressForm on:inspect={connect} />
 			<h1>
 				<!-- <Button
 					color="primary"
@@ -92,7 +92,47 @@
 	</Row>
 </Container>
 
-{#if pending} Connecting... 
-{:else} Please connect
+{#if pending}
+	Connecting...
+{:else}
+	Please connect
 {/if}
 
+<style>
+	.rotate {
+		animation: rotation 8s infinite linear;
+	}
+
+	@keyframes rotation {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(359deg);
+		}
+	}
+
+	@-webkit-keyframes pulseGlow {
+    0% {
+        box-shadow: none;
+    }
+    20% {
+        box-shadow: 0 0 120px 75px rgba(243, 243, 243, 0.1);
+        border-color: rgba(3, 24, 51, 0.3);
+    }
+    80% {
+        box-shadow: none;
+    }
+}
+
+
+.pulse {
+  /* position: absolute; */
+  top: 10%;
+  left: 45%;
+    width: 100px;
+    border-radius: 50%;
+    -webkit-animation: pulseGlow 2s ease-in-out 1s infinite;
+}
+
+</style>

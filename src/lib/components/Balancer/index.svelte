@@ -2,6 +2,7 @@
 	import { connected, signer, signerAddress } from 'svelte-ethers-store';
 	import { CovalentAPI } from '$lib/utils/covalentapi';
 	import Dashboard from './Dashboard.svelte';
+	import Loading from '$lib/components/Header/Loading.svelte';
 import { Spinner, Container, Row, Col } from 'sveltestrap';
 	// import { dataset_dev, dirty_components } from 'svelte/internal';
 
@@ -18,20 +19,21 @@ import { Spinner, Container, Row, Col } from 'sveltestrap';
 </script>
 
 {#await tarotData}
-<Container fluid >
+<!-- <Container fluid > -->
 	<!-- <Row class="justify-content-center align-items-center">
 		<h1 style="width:20%; margin-bottom:-20%;">
 			Getting data...
 		</h1>
 	</Row>	 -->
-	<Row class=" justify-content-center align-items-center">
+	<!-- <Row class=" justify-content-center align-items-center">
 		<Col>
-			<h1 >
-				<Spinner type="grow" color="primary" style="width: 5rem; height: 5rem; margin-left: 50%; margin-bottom:-20%;"></Spinner>
-			</h1>
-		</Col>
+			<h1 > -->
+				<!-- <Spinner type="grow" color="primary" style="width: 8rem; height: 8rem; margin-left: 50%; margin-bottom:-20%;"></Spinner> -->
+				<Loading />
+			<!-- </h1> -->
+		<!-- </Col>
 	</Row>
-</Container>
+</Container> -->
 	
 	
 {:then pData}
