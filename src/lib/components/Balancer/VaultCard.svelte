@@ -110,12 +110,12 @@
             </FormGroup>    
             <FormGroup>
                 <Label id={`b${value.address}-${value.token1.symbol}_rate`}>TWAP :</Label>
-                <Button outline color="secondary">{value.token0rate.toFixed(4)}</Button> / <Button outline color="{riskClass(value.liqPrices0.risk[0])}">{value.liqPrices0.price[0].toFixed(4)}</Button> - <Button outline color="{riskClass(value.liqPrices0.risk[1])}">{value.liqPrices0.price[1].toFixed(4)}</Button>
+                <Button size="sm" outline color="secondary">{value.token0rate.toFixed(4)}</Button> / <Button size="sm" outline color="{riskClass(value.liqPrices0.risk[0])}">{value.liqPrices0.price[0].toFixed(4)}</Button> - <Button size="sm" outline color="{riskClass(value.liqPrices0.risk[1])}">{value.liqPrices0.price[1].toFixed(4)}</Button>
                 <Popover target={`b${value.address}-${value.token1.symbol}_rate`} top>{value.token1rate}</Popover>
             </FormGroup>
             <FormGroup>
                 <Label id={`b${value.address}-${value.token1.symbol}_rate`}>TWAP :</Label>
-                <Button outline  color="secondary">{value.token1rate.toFixed(4)}</Button> / <Button outline color="{riskClass(value.liqPrices1.risk[0])}">{value.liqPrices1.price[0].toFixed(4)}</Button> - <Button outline color="{riskClass(value.liqPrices1.risk[1])}">{value.liqPrices1.price[1].toFixed(4)}</Button>
+                <Button size="sm" outline  color="secondary">{value.token1rate.toFixed(4)}</Button> / <Button size="sm" outline color="{riskClass(value.liqPrices1.risk[0])}">{value.liqPrices1.price[0].toFixed(4)}</Button> - <Button size="sm" outline color="{riskClass(value.liqPrices1.risk[1])}">{value.liqPrices1.price[1].toFixed(4)}</Button>
                 <Popover target={`b${value.address}-${value.token1.symbol}_rate`} top>{value.token1rate}</Popover>
             </FormGroup>                 
             Rebalance: <h4><Badge color="{rebalanceRisk(value)}">{@html calculateRebalance(value.token0,value.token1)}</Badge></h4>    
