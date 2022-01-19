@@ -224,7 +224,7 @@ class TarotUtil {
 		lp1.risk = [];
 		lp1.risk.push(this.calcRiskFactor(lp1.price[0],twap1,safetyMarginSqrt));
 		lp1.risk.push(this.calcRiskFactor(lp1.price[1],twap1,safetyMarginSqrt));
-		const lp2 = { price: [twap2 / swingB, twap2 * swingA]};
+		const lp2 = { price: [twap2 / swingA, twap2 * swingB]};
 		lp2.risk = [];
 		lp2.risk.push(this.calcRiskFactor(lp2.price[0],twap2,safetyMarginSqrt));
 		lp2.risk.push(this.calcRiskFactor(lp2.price[1],twap2,safetyMarginSqrt));
