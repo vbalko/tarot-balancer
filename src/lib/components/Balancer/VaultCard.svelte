@@ -12,6 +12,7 @@
 		Popover,
 		Spinner,
 		Button,
+        Progress,
 		Icon
 	} from 'sveltestrap';
 	import { TarotUtils, w3utils } from '$lib/utils/tarot/tarotUtils';
