@@ -100,19 +100,28 @@ class TarotUtil {
 		const token0 = await this.bTarotInfo(token0Address);
 		const token1 = await this.bTarotInfo(token1Address);
 
-		try {
-			token0.geckoPrice = await geckoApi.getTokenPriceByContract(token0.underlying);
-			token0.borrowedUSD = token0.geckoPrice * token0._borrowed;
-			token1.geckoPrice = await geckoApi.getTokenPriceByContract(token1.underlying);
-			token1.borrowedUSD = token1.geckoPrice * token1._borrowed;
-		} catch (err) {
-			const args = {
-				status: errorCodes.VAULT_TYPE,
-				prev: err
-			};
-			this._errorLog(`Problem getting price.`, 'cTarotInfo', false, args);
-		}
+		// try {
+		// 	token0.geckoPrice = await geckoApi.getTokenPriceByContract(token0.underlying);
+		// 	token0.borrowedUSD = token0.geckoPrice * token0._borrowed;
+		// 	token1.geckoPrice = await geckoApi.getTokenPriceByContract(token1.underlying);
+		// 	token1.borrowedUSD = token1.geckoPrice * token1._borrowed;
+		// } catch (err) {
+		// 	const args = {
+		// 		status: errorCodes.VAULT_TYPE,
+		// 		prev: err
+		// 	};
+		// 	this._errorLog(`Problem getting price.`, 'cTarotInfo', false, args);
+		// }
 
+		const debankInfoAll = await this.tarotVaultsDebank(signerAddress);
+		const debankInfo = debankInfoAll.filter(item => item.token0.borrow_quantity == token0._borrowed)[0];
+
+
+		token0.geckoPrice = debankInfo.token0.price;
+		token1.geckoPrice = debankInfo.token1.price;
+
+		token0.borrowedUSD = debankInfo.token0.borrow_amount;
+		token1.borrowedUSD = debankInfo.token1.borrow_amount;
 
 		const LPName = `${token0.symbol}/${token1.symbol}`;
 
@@ -124,10 +133,12 @@ class TarotUtil {
 		}
 		const totalCollateralLP = exchangeRate * balanceOf;
 
-		const routerRecord = await this.cTarotGetRouter(address);
-		const router = await Web3Methods.getContractObj(routerRecord.vault.dex.address, ABI.spiritRouter, signer);
+		debankInfo.LPPrice = debankInfo.asset_usd_value / totalCollateralLP;
 
-		const usdPrice = await router.getAmountsOut(1, ['0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83', '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75']);
+		const routerRecord = await this.cTarotGetRouter(address);
+		//const router = await Web3Methods.getContractObj(routerRecord.vault.dex.address, ABI.spiritRouter, signer);
+
+		//const usdPrice = await router.getAmountsOut(1, ['0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83', '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75']);
 
 		let reserveRate;
 		try {
@@ -144,7 +155,9 @@ class TarotUtil {
 			LPreserveRate = 1;
 		}
 
-		const LPPrice = ((token0.geckoPrice * LPreserveRate.reserves[0]) + (token1.geckoPrice * LPreserveRate.reserves[1])) / LPreserveRate.totalSupply;
+
+
+		//const LPPrice = ((token0.geckoPrice * LPreserveRate.reserves[0]) + (token1.geckoPrice * LPreserveRate.reserves[1])) / LPreserveRate.totalSupply;
 		const LPrice0 = LPreserveRate.totalSupply / (2 * LPreserveRate.reserves[0]);
 		const LPrice1 = LPreserveRate.totalSupply / (2 * LPreserveRate.reserves[1]);
 
@@ -153,16 +166,14 @@ class TarotUtil {
 
 		
 
-		const m0 = this.calculateM0(token0, token1, LPrice0, LPrice1, safeMarginSqrt, liqIncentive);
-		console.log(`${routerRecord.vault.dex.name} ${LPName} m0: ${m0}`);
+		//const m0 = this.calculateM0(token0, token1, LPrice0, LPrice1, safeMarginSqrt, liqIncentive);
+		//console.log(`${routerRecord.vault.dex.name} ${LPName} m0: ${m0}`);
 
-		const totalBorrowed = token0.borrowedUSD + token1.borrowedUSD;
-		const totalCollateral = totalCollateralLP * LPPrice;
-		const totalEquity = totalCollateral - totalBorrowed;
+		// const totalBorrowed = token0.borrowedUSD + token1.borrowedUSD;
+		// const totalCollateral = totalCollateralLP * LPPrice;
+		// const totalEquity = totalCollateral - totalBorrowed;
 
-		const debankInfoAll = await this.tarotVaultsDebank(signerAddress);
-		const debankInfo = debankInfoAll.filter(item => item.token0.borrow_quantity == token0._borrowed)[0];
-		debankInfo.LPPrice = debankInfo.asset_usd_value / totalCollateralLP;
+
 
 		const swings = this.calcSwings(totalCollateralLP,liqIncentive,LPrice0,LPrice1,token0, token1,safeMarginSqrt);
 		const liqp = this.calcLiqPrices(LPreserveRate.inverseRate, LPreserveRate.rate, swings.swingA, swings.swingB,safeMarginSqrt);
@@ -171,9 +182,9 @@ class TarotUtil {
 
 		const ret = {
 			address,
-			LPPrice,
+			LPPrice: debankInfo.LPPrice,
 			LPrice0,
-			m0,
+			//m0,
 			LPrice1,
 			type: routerRecord.vault.type == 1 ? 'Farm' : 'Vault+Farm',
 			dex: routerRecord.vault.dex.name,
@@ -187,10 +198,10 @@ class TarotUtil {
 			token1off: token1.borrowed * LPreserveRate.rate,
 			LPName,
 			totalCollateralLP,
-			totalCollateral,
-			totalBorrowed,
+			totalCollateral: debankInfo.asset_usd_value,
+			totalBorrowed: debankInfo.debt_usd_value,
 			LPtotalSupply: this.LPReservesRate.totalSupply,
-			totalEquity,
+			totalEquity: debankInfo.equity_usd_valut,
 			safeMarginSqrt,
 			liqIncentive,
 			debankInfo

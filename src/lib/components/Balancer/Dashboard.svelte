@@ -68,7 +68,7 @@ import Spinner from 'sveltestrap/src/Spinner.svelte';
 </script>
 
 <Navbar color="primary" dark>
-	<NavbarBrand href="/">Tarot Balancer</NavbarBrand>
+	<NavbarBrand href="javascript:window.location.href=window.location.href">Tarot Balancer</NavbarBrand>
 	<Nav navbar>
 		<NavItem>
 			<h5><Badge color="primary">{$signerAddress}</Badge></h5>

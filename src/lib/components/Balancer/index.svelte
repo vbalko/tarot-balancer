@@ -8,13 +8,16 @@ import { Spinner, Container, Row, Col } from 'sveltestrap';
 
 	//$: account = $connected && $signer ? $signer.getAddress() : '';
 	console.log(`signerAddress ${$signerAddress}`);
-	const tarotData = CovalentAPI.getBalances($signerAddress);
+	// const tarotData = CovalentAPI.getBalances($signerAddress);
 
 	const getTarotRecords = (data) => {
 		let items = data.items;
 		let ret = items.filter(item => item.contract_ticker_symbol == 'cTAROT');
 		return ret;
 	}
+
+	$: tarotData = CovalentAPI.getBalances($signerAddress);
+
 
 </script>
 

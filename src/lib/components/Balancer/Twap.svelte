@@ -7,13 +7,21 @@
 
 	$: twapKind;
 
-    const calculateProgress = (val1, val2, twap) => {
+    const calculateProgress_old = (val1, val2, twap) => {
         const normalized = (twap - val1) / (val2 - val1) * 100;
         const ret = {};
         ret.val0 = normalized;
         ret.val1 = 100 - normalized;
         return ret;
     }
+
+	const calculateProgress = (val1, val2, twap) => {
+		const deviation = (twap / 2) / val1;
+		const ret = {};
+		ret.val0 = 50 * deviation;
+		ret.val1 = 100 - ret.val0;
+		return ret;
+	}
 
     $: progress = calculateProgress(data[twapKind].liqPrice0.price,data[twapKind].liqPrice1.price,data[twapKind]['twap']);
 </script>

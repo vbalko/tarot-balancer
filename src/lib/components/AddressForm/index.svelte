@@ -17,6 +17,13 @@
 
 	} from 'sveltestrap';
 	import { ethers } from 'ethers';
+	import {
+		connected,
+		provider,
+		signer,
+		signerAddress,
+		defaultEvmStores
+	} from 'svelte-ethers-store';	
 	// import { W3 } from '../utils/web3';
 
 	const dispatch = createEventDispatcher();
@@ -51,6 +58,8 @@
 
 	let validAddress = false;
 	// $: validAddress = validateAddress($config.w3.address);
+	// defaultEvmStores.setProvider();
+	// console.log('signerAddress:::: ',$signerAddress);
 </script>
 
 <!-- <Styles /> -->
@@ -65,7 +74,7 @@
 			type="text"
 			invalid={false}
 			feedback="invalid address"
-
+			value={$signerAddress}
 		/>
 		{#if validAddress}
 			<div in:fly={{duration:1400}}>
